@@ -10,6 +10,5 @@ create table bamazon_tb (
     department_name varchar(100) null,
     price int(100), 
     
-	primary key(item_id)
-    
+	primary key(item_id)    
 );
