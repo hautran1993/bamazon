@@ -1,31 +1,34 @@
 //short code that doesn't reuse multiple codes are best
 //-----------------------------------------------------------------------
-var inquirer = require('inquirer');
-var mysql = require('mysql');
-var table = require('cli-table');
-var color = require('colors');
+const inquirer = require('inquirer');
+const mysql = require('mysql');
+const table = require('cli-table');
+const color = require('colors');
 
     //populate is database with around 10 different products
     //(i.e insert 'mock' data rows int this data base and table).
 //create a file call bamazoncustomer.js
 var connection = mysql.createConnection({
+    host: 'localhost',
+    port: 3306,
     user: 'root',
     password: "",
-    database: 'bamazonDB'
+    database: 'bamazon'
 });
-
+//connecting to the database
 connection.connect(function(err) {
     if(err) throw err;
     console.log(`connected as id ${connection.threadId}`)
+    connectToBamazon();
 })
-
+//function to pull table from bamazon
 function connectToBamazon() {
-    connection.query('select FROM bamazon_tb', function(err, res) {
+    connection.query('select * FROM products', function(err, res) {
     if (err) throw err;
     console.log(res)
     connection.end();
     });
-}
+};
     //running this application will first display all of the items
     //includes the ids, names, produts, and prices of products for sale.
 
