@@ -2,7 +2,7 @@
 //-----------------------------------------------------------------------
 const inquirer = require('inquirer');
 const mysql = require('mysql');
-const table = require('cli-table');
+const Table = require('cli-table');
 const color = require('colors');
 
     //populate is database with around 10 different products
@@ -18,17 +18,52 @@ var connection = mysql.createConnection({
 //connecting to the database
 connection.connect(function(err) {
     if(err) throw err;
-    console.log(`connected as id ${connection.threadId}`)
-    connectToBamazon();
-})
-//function to pull table from bamazon
-function connectToBamazon() {
-    connection.query('select * FROM products', function(err, res) {
-    if (err) throw err;
-    console.log(res)
+    console.log(`connected as id ${connection.threadId}`);
     connection.end();
+});
+
+
+//function to pull table from bamazon
+function displayTable() {
+    connection.query('select * FROM bamazon.products', function(err, res) {
+    if (err) throw err;
+    var productTable = new Table({
+        head : ['Item ID', 'Item Name', 'Item Category', 'Price', 'Stock Quanity'],
+        colWidths : [10,30,20,10,20] 
+    });
+    //loop to push items from response into table
+    for (var i = 0; i < res.length; i++) {
+        productTable.push(
+            [res[i].item_id, res[i].itemName, res[i].itemCategory, res[i].price, res[i].stockQuanity]
+        );
+    };
+        console.log(productTable.toString());
     });
 };
+
+function purchase() {
+    inquirer.prompt([
+    {
+        name: 'id',
+        type: 'input',
+        message:'What is the Item ID that you would like to purchase?'
+    }, {
+        name: 'quanity',
+        type: 'input',
+        message: "How many of this product would you like to purchase?"
+    }
+    ]).then(function(answer){
+        //for now
+        if(answer.id === id ){
+            console.log('great')
+        }else{
+            process.exit();
+        };
+    });
+};//end of purchase function
+
+displayTable();
+purchase();
     //running this application will first display all of the items
     //includes the ids, names, produts, and prices of products for sale.
 
