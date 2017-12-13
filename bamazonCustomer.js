@@ -81,10 +81,11 @@ function purchase() {
 //function to take in answers from users and update it to bamazon database
 function updateToBamazon(id, quantityPurchased) {
     //connecting to database and targeting item_id 
-    connection.query('SELECT * FROM bamazon.products WHERE item_id' + id, function(err,res){
+    connection.query('SELECT * FROM bamazon.products WHERE item_id=' + id, function(err,res){
         if (err) { console.log('error') }
         console.log(quantityPurchased);
         console.log(id);
+        console.log(res);
         if(quantityPurchased <= res.stockQuantity){
             //var to store the total cost to display later
             var totalCost = res.price * res.stockQuantity
