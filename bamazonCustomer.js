@@ -22,7 +22,6 @@ connection.connect(function(err) {
     connection.end();
 });
 
-
 //function to pull table from bamazon
 function displayTable() {
     connection.query('select * FROM bamazon.products', function(err, res) {
@@ -38,9 +37,28 @@ function displayTable() {
         );
     };
         console.log(productTable.toString());
+        bamazon();
     });
 };
-
+//function bamazon
+function bamazon(){
+    inquirer.prompt([
+    {
+        name: "choice",
+        type: 'list',
+        message: 'Here is our list of available Items, would you like to shop with bamazon?',
+        choices :['yes', 'no']
+    }
+    ]).then(function(answer){      
+        if(answer.choice === 'yes'){
+        purchase();
+        }else{
+        console.log('Have a Wonderful day');    
+        process.exit();
+        }   
+    });
+};
+//function to ask users for id and quanity.
 function purchase() {
     inquirer.prompt([
     {
@@ -54,16 +72,12 @@ function purchase() {
     }
     ]).then(function(answer){
         //for now
-        if(answer.id === id ){
-            console.log('great')
-        }else{
-            process.exit();
-        };
     });
 };//end of purchase function
 
+//
 displayTable();
-purchase();
+
     //running this application will first display all of the items
     //includes the ids, names, produts, and prices of products for sale.
 
