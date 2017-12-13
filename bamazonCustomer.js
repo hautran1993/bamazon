@@ -33,7 +33,7 @@ function displayTable() {
     //loop to push items from response into table
     for (var i = 0; i < res.length; i++) {
         productTable.push(
-            [res[i].item_id, res[i].itemName, res[i].itemCategory, res[i].price, res[i].stockQuanity]
+            [res[i].item_id, res[i].itemName, res[i].itemCategory, res[i].price, res[i].stockQuantity]
         );
     };
         console.log(productTable.toString());
@@ -55,7 +55,7 @@ function bamazon(){
         }else{
         console.log('Have a Wonderful day');    
         process.exit();
-        }   
+        };   
     });
 };
 //function to ask users for id and quanity.
@@ -64,18 +64,40 @@ function purchase() {
     {
         name: 'id',
         type: 'input',
-        message:'What is the Item ID that you would like to purchase?'
+        message:'What is the Item ID that you would like to purchase?'.red
     }, {
-        name: 'quanity',
+        name: 'quantity',
         type: 'input',
-        message: "How many of this product would you like to purchase?"
+        message: "How many of this product would you like to purchase?".red
     }
     ]).then(function(answer){
-        //for now
+        var id = answer.id
+        var quantity = answer.quantity
+        //arguments to use for next function(thinking ahead);
+        updateToBamazon(id,quantity);
     });
 };//end of purchase function
 
-//
+//function to take in answers from users and update it to bamazon database
+function updateToBamazon(id, quantityPurchased) {
+    //connecting to database and targeting item_id 
+    connection.query('SELECT * FROM bamazon.products WHERE item_id' + id, function(err,res){
+        if (err) { console.log('error') }
+        console.log(quantityPurchased);
+        console.log(id);
+        if(quantityPurchased <= res.stockQuantity){
+            //var to store the total cost to display later
+            var totalCost = res.price * res.stockQuantity
+            console.log(`we have ${res.stockQuantity} of this items availiable`);
+            console.log(`your total is ${totalCost}`);
+        }else{
+            console.log("go away");
+        }
+        displayTable();
+    });
+};
+
+//calling function to run
 displayTable();
 
     //running this application will first display all of the items
