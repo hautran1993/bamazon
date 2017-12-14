@@ -9,27 +9,33 @@ CREATE TABLE products (
     itemName varchar(50) not null,
     itemCategory varchar(50) not null,
     price decimal(10,2) not null,
-    stockQuanity integer(50) not null,
+    stockQuantity integer(50) not null,
     primary Key(item_id)
 
 );
 
-INSERT INTO products (itemName, ItemCategory, price, stockQuanity)
+INSERT INTO products (itemName, ItemCategory, price, stockQuantity)
 
-	values ('pho tai','soup', 9.99 , 100);
+	values ('Concords 11s','sport', 300 , 3);
     
 
-INSERT INTO products (itemName, ItemCategory, price, stockQuanity)
+INSERT INTO products (itemName, ItemCategory, price, stockQuantity)
 
-	values ('Salad Bowl with Steak','salad', 9.99 , 100);
+	values ('brown dress shoes','dress shoes', 150 , 3);
     
 
-INSERT INTO products (itemName, ItemCategory, price, stockQuanity)
+INSERT INTO products (itemName, ItemCategory, price, stockQuantity)
 
-	values ('combination rice platter','Rice Dish', 12.99 , 100);
+	values ('Fire red 4s','sport', 200 , 20);
     
 
-INSERT INTO products (itemName, ItemCategory, price, stockQuanity)
+INSERT INTO products (itemName, ItemCategory, price, stockQuantity)
 
-	values ('tarro-bobba','desert', 3.99 , 100);
+	values ('yeezy 300 boost','sport', 300 , 3);
+    
+    
+INSERT INTO products (itemName, ItemCategory, price, stockQuantity)
+
+	values ('LV Dress Shoes','Dress Shoes', 300 , 3);
+    
     

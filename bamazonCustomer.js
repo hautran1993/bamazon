@@ -19,13 +19,13 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
     if(err) throw err;
     console.log(`connected as id ${connection.threadId}`);
-    connection.end();
 });
 
 //function to pull table from bamazon
 function displayTable() {
     connection.query('select * FROM bamazon.products', function(err, res) {
     if (err) throw err;
+    //var to store npm table 
     var productTable = new Table({
         head : ['Item ID', 'Item Name', 'Item Category', 'Price', 'Stock Quanity'],
         colWidths : [10,30,20,10,20] 
@@ -46,16 +46,21 @@ function bamazon(){
     {
         name: "choice",
         type: 'list',
-        message: 'Here is our list of available Items, would you like to shop with bamazon?',
-        choices :['yes', 'no']
+        message: 'Here is our list of available Items at Bamazon'.red,
+        choices :['shop with Bamazon','Show My Cart', 'exit']
     }
     ]).then(function(answer){      
-        if(answer.choice === 'yes'){
+        if(answer.choice === 'shop with Bamazon'){
         purchase();
+        }else if(answer.choice === 'Show My Cart') {
+            console.log('your car is emptty at the momment');
+            //take this out later
+            connection.end();
         }else{
-        console.log('Have a Wonderful day');    
+        console.log('Have a Wonderful day');  
+        connection.end();  
         process.exit();
-        };   
+        };
     });
 };
 //function to ask users for id and quanity.
@@ -75,29 +80,31 @@ function purchase() {
         var quantity = answer.quantity
         //arguments to use for next function(thinking ahead);
         updateToBamazon(id,quantity);
+        console.log('your order has been placed');
     });
 };//end of purchase function
 
 //function to take in answers from users and update it to bamazon database
 function updateToBamazon(id, quantityPurchased) {
     //connecting to database and targeting item_id 
-    connection.query('SELECT * FROM bamazon.products WHERE item_id=' + id, function(err,res){
-        if (err) { console.log('error') }
-        console.log(quantityPurchased);
-        console.log(id);
-        console.log(res);
-        if(quantityPurchased <= res.stockQuantity){
+    connection.query('SELECT * FROM products WHERE item_id = ' + id, function(err,res){
+        if (err) throw err;
+        if(quantityPurchased <= res[0].stockQuantity){
             //var to store the total cost to display later
-            var totalCost = res.price * res.stockQuantity
-            console.log(`we have ${res.stockQuantity} of this items availiable`);
-            console.log(`your total is ${totalCost}`);
+            var totalCost = parseInt(res[0].price) * parseInt(res[0].stockQuantity)
+            console.log(`we have ${res[0].stockQuantity} of this items in stock`);
+            console.log(`your total is ${totalCost} Dollars`);
+            //need to update information to sql table and then display it with the upate data/.
+            displayTable();
         }else{
             console.log("go away");
-        }
-        displayTable();
+            displayTable();
+        };
+    });
+    connection.query('update * from products where stock_quanity = ' + quantityPurchased, function(err,res){
+
     });
 };
-
 //calling function to run
 displayTable();
 
