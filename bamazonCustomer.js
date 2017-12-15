@@ -41,7 +41,7 @@ function displayTable() {
     });
 };
 //function bamazon
-function bamazon(){
+async function bamazon(){
     inquirer.prompt([
     {
         name: "choice",
@@ -95,14 +95,11 @@ function updateToBamazon(id, quantityPurchased) {
             console.log(`we have ${res[0].stockQuantity} of this items in stock`);
             console.log(`your total is ${totalCost} Dollars`);
             //need to update information to sql table and then display it with the upate data/.
-            displayTable();
+            connection.query('UPDATE products SET stockQuantity = stockQuantity - ' + quantityPurchased + ' Where item_id = ' + id);
         }else{
             console.log("go away");
-            displayTable();
         };
-    });
-    connection.query('update * from products where stock_quanity = ' + quantityPurchased, function(err,res){
-
+        displayTable();
     });
 };
 //calling function to run

@@ -19,7 +19,6 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
     if(err) throw err;
     console.log(`connected as id ${connection.threadId}`);
-    connection.end();
 });
 
 //function to pull table from bamazon
@@ -29,7 +28,7 @@ function displayTable() {
     var productTable = new Table({
         head : ['Item ID', 'Item Name', 'Item Category', 'Price', 'Stock Quanity'],
         colWidths : [10,30,20,10,20] 
-    });
+    }); 
     //loop to push items from response into table
     for (var i = 0; i < res.length; i++) {
         productTable.push(
@@ -37,65 +36,124 @@ function displayTable() {
         );
     };
         console.log(productTable.toString());
-        bamazon();
+        manager();
     });
 };
 //function bamazon
-function bamazon(){
+function manager(){
     inquirer.prompt([
     {
         name: "choice",
         type: 'list',
-        message: 'Here is our list of available Items, would you like to shop with bamazon?',
-        choices :['yes', 'no']
+        message: 'Hello Manager choose something',
+        choices :['View Low Inventory', 'Add to Inventory', 'Add New Product']
     }
     ]).then(function(answer){      
-        if(answer.choice === 'yes'){
-        purchase();
+        if(answer.choice === 'View Low Inventory'){
+            console.log("view low inventory")
+            lowInventory();
+        }else if(answer.choice === 'Add to Inventory'){
+            console.log("view low inventory")
+            addInventory();
         }else{
         console.log('Have a Wonderful day');    
         process.exit();
         };   
     });
 };
-//function to ask users for id and quanity.
-function purchase() {
+
+function lowInventory() {
+    connection.query('select * FROM bamazon.products where stockQuantity < 5', function(err, res) {
+        if (err) throw err;
+        var productTable = new Table({
+            head : ['Item ID', 'Item Name', 'Item Category', 'Price', 'Stock Quanity'],
+            colWidths : [10,30,20,10,20] 
+        }); 
+        for (var i = 0; i < res.length; i++) {
+            productTable.push(
+                [res[i].item_id, res[i].itemName, res[i].itemCategory, res[i].price, res[i].stockQuantity]
+            );
+        }
+        console.log(productTable.toString());
+        connection.end();
+    })
+};    
+
+function addInventory() {
     inquirer.prompt([
     {
-        name: 'id',
+        name: 'item',
         type: 'input',
-        message:'What is the Item ID that you would like to purchase?'.red
+        message: `please enter the item name`
+    },{
+        name: 'category',
+        type: `input`,
+        message: `please enter the category`
+    },{
+        name: `price`,
+        type: `input`,
+        message: `pleae enter the price`
     }, {
-        name: 'quantity',
-        type: 'input',
-        message: "How many of this product would you like to purchase?".red
+        name: `quantity`,
+        type: `input`,
+        message: `pleae enter the quanitity`
     }
     ]).then(function(answer){
-        var id = answer.id
-        var quantity = answer.quantity
-        //arguments to use for next function(thinking ahead);
-        updateToBamazon(id,quantity);
+    
+        connection.query(`INSERT INTO bamazon.products (itemName, itemCategory, price, stockQuantity) 
+        VALUES ("${answer.item}", "${answer.category}", ${answer.price},${answer.quantity})`, function(err, res) {
+            if (err) throw err;
+            console.log("product has been inserted");
+            displayTable();
+            manager();
+        });
     });
-};//end of purchase function
+};  
+// * View Products for Sale
 
-//function to take in answers from users and update it to bamazon database
-function updateToBamazon(id, quantityPurchased) {
-    //connecting to database and targeting item_id 
-    connection.query('SELECT * FROM bamazon.products WHERE item_id' + id, function(err,res){
-        if (err) { console.log('error') }
-        console.log(quantityPurchased);
-        console.log(id);
-        if(quantityPurchased <= res.stockQuantity){
-            //var to store the total cost to display later
-            var totalCost = res.price * res.stockQuantity
-            console.log(`we have ${res.stockQuantity} of this items availiable`);
-            console.log(`your total is ${totalCost}`);
-        }else{
-            console.log("go away");
-        }
-        displayTable();
-    });
-};
+// * View Low Inventory
 
-//calling function to run
+// * Add to Inventory
+
+// * Add New Product
+//function to ask users for id and quanity.
+// function purchase() {
+//     inquirer.prompt([
+//     {
+//         name: 'id',
+//         type: 'input',
+//         message:'What is the Item ID that you would like to purchase?'.red
+//     }, {
+//         name: 'quantity',
+//         type: 'input',
+//         message: "How many of this product would you like to purchase?".red
+//     }
+//     ]).then(function(answer){
+//         var id = answer.id
+//         var quantity = answer.quantity
+//         //arguments to use for next function(thinking ahead);
+//         updateToBamazon(id,quantity);
+//     });
+// };//end of purchase function
+
+// //function to take in answers from users and update it to bamazon database
+// function updateToBamazon(id, quantityPurchased) {
+//     //connecting to database and targeting item_id 
+//     connection.query('SELECT * FROM bamazon.products WHERE item_id' + id, function(err,res){
+//         if (err) { console.log('error') }
+//         console.log(quantityPurchased);
+//         console.log(id);
+//         if(quantityPurchased <= res.stockQuantity){
+//             //var to store the total cost to display later
+//             var totalCost = res.price * res.stockQuantity
+//             console.log(`we have ${res.stockQuantity} of this items availiable`);
+//             console.log(`your total is ${totalCost}`);
+//         }else{
+//             console.log("go away");
+//         }
+//         displayTable();
+//     });
+// };
+
+// //calling function to run
 displayTable();
