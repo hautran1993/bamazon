@@ -46,17 +46,18 @@ function manager(){
         name: "choice",
         type: 'list',
         message: 'Hello Manager choose something',
-        choices :['View Low Inventory', 'Add to Inventory', 'Add New Product']
+        choices :['View Low Inventory', 'Add to Inventory', 'Add New Product', 'exit']
     }
     ]).then(function(answer){      
         if(answer.choice === 'View Low Inventory'){
-            console.log("view low inventory")
             lowInventory();
         }else if(answer.choice === 'Add to Inventory'){
-            console.log("view low inventory")
-            addInventory();
-        }else{
-        console.log('Have a Wonderful day');    
+            updateItem();
+        }else if(answer.choice === 'Add New Product'){
+            addItem();
+        }else if(answer.choice === 'exit') {
+        console.log('Have a Wonderful day');  
+        connection.end()  
         process.exit();
         };   
     });
@@ -75,11 +76,33 @@ function lowInventory() {
             );
         }
         console.log(productTable.toString());
-        connection.end();
     })
-};    
+};  
 
-function addInventory() {
+function updateItem() {
+    inquirer.prompt([
+    {
+        name: 'id',
+        type: 'input',
+        message: `please enter the item id`
+    },{
+        name: `quantity`,
+        type: `input`,
+        message: `please enter the quanitity you want to add`
+    }
+    ]).then(function(answer){
+        var id = answer.id
+        var quantity = answer.quantity
+        connection.query('SELECT * FROM Products WHERE item_id = ' + id, function(error, response) {
+            if (error) { console.log(error) };
+            connection.query('UPDATE Products SET StockQuantity = StockQuantity + ' + quantity + ' WHERE item_id = ' + id);
+            console.log("product has been inserted");
+            displayTable();
+        });
+    });    
+};  
+
+function addItem() {
     inquirer.prompt([
     {
         name: 'item',
